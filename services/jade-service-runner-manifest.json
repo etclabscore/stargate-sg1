@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "lastModified": "2019-10-25T23:54:54.742Z",
+  "services": [
+    {
+      "name": "multi-geth",
+      "version": "1.9.2",
+      "path": "./services/multi-geth/1.9.2"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+/home/ia/dev/meowsbits/stargate-sg1/__generated__/rust/target/debug/template_client-703d1555daeba2ef: /home/ia/dev/meowsbits/stargate-sg1/__generated__/rust/src/lib.rs /home/ia/dev/meowsbits/stargate-sg1/__generated__/rust/src/test_harness.rs

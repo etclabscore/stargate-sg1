@@ -1,0 +1,33 @@
+{
+  "name": "@etclabscore/pristine-typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "start": "npm run build && node build/index.js",
+    "generateclient": "open-rpc-generator-client -d https://raw.githubusercontent.com/etclabscore/jade-signer-rpc/master/openrpc.json -o __generated__",
+    "build": "tsc",
+    "lint": "tslint --fix -p .",
+    "test": "npm run lint && jest --coverage"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@open-rpc/generator-client": "^1.13.0",
+    "@types/jest": "^24.0.13",
+    "@types/lodash": "^4.14.144",
+    "@types/node": "^12.6.8",
+    "@types/ws": "^6.0.3",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.1.0",
+    "tslint": "^5.17.0",
+    "typescript": "^3.5.1"
+  },
+  "dependencies": {
+    "@etclabscore/ethereum-json-rpc": "^1.2.3",
+    "@etclabscore/jade-service-runner-client": "^1.7.4"
+  }
+}

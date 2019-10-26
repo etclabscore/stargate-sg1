@@ -1,0 +1,13 @@
+=============== Oct 25, 2019 (CDT) ===============
+18:54:55.205471 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+18:54:55.211718 db@open opening
+18:54:55.214294 version@stat F·[] S·0B[] Sc·[]
+18:54:55.220708 db@janitor F·2 G·0
+18:54:55.220735 db@open done T·8.986382ms
+18:57:29.215682 memdb@flush N·1126423 S·127MiB
+18:57:30.093784 memdb@flush created L0@3 N·1126423 S·68MiB "\x00\x001..<\x03#,v630698":"\xff\xfe\xeb..t\xfc\x9a,v772028"
+18:57:30.093831 version@stat F·[1] S·68MiB[68MiB] Sc·[0.25]
+18:57:30.099740 memdb@flush committed F·1 T·884.016809ms
+18:57:30.120738 journal@remove removed @1
+18:58:22.307861 db@close closing
+18:58:22.309181 db@close done T·1.31836ms
