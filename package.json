@@ -8,7 +8,6 @@
   },
   "scripts": {
     "start": "npm run build && node build/index.js",
-    "generateclient": "open-rpc-generator-client -d https://raw.githubusercontent.com/etclabscore/jade-signer-rpc/master/openrpc.json -o __generated__",
     "build": "tsc",
     "lint": "tslint --fix -p .",
     "test": "npm run lint && jest --coverage"
@@ -16,6 +15,7 @@
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@etclabscore/eserialize": "^1.0.2",
     "@open-rpc/generator-client": "^1.13.0",
     "@types/jest": "^24.0.13",
     "@types/lodash": "^4.14.144",

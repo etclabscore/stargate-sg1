@@ -1,5 +1,6 @@
 import ServiceRunner from "@etclabscore/jade-service-runner-client";
 import { EthereumJSONRPC } from "@etclabscore/ethereum-json-rpc"; // <-- which one is it?
+import { hexToNumber } from "@etclabscore/eserialize";
 
 import { baz } from "./mymod";
 
@@ -48,12 +49,17 @@ const setupClients = async (environments: string[]) => {
 const exec = async () => {
   await setupClients(Object.keys(clients)); // this will actually wait promises return
 //  const balance = await clients.kotti.eth_getBalance("0xc1912fee45d61c87cc5ea59dae31190fffff232d", "0x0");
- // use BigNumber.js I think to pull this back ~ npm install  @types/bignumber.js
-  // console.log(balance);
- //  const txReciept = await clients.goerli.eth_sendRawTransaction(txHashKotti);
+// use BigNumber.js I think to pull this back ~ npm install  @types/bignumber.js
+// console.log(balance);
+//  const txReciept = await clients.goerli.eth_sendRawTransaction(txHashKotti);
 
-  let blockN = await clients.kotti.eth_getBlockByNumber("latest", false);
-  console.log("blockn", blockN);
+  let blockResponse = await clients.kotti.eth_getBlockByNumber("latest", false);
+  if (blockResponse) {
+    let n = blockResponse.number;
+    if (n) {
+      console.log("blockn", hexToNumber(n));
+    }
+  }
 };
 
 exec().then(() => {
