@@ -1,8 +1,9 @@
 import ServiceRunner from "@etclabscore/jade-service-runner-client";
-import { EthereumJSONRPC } from "@etclabscore/ethereum-json-rpc"; // <-- which one is it?
+import { EthereumJSONRPC, GetBlockByHashResult } from "@etclabscore/ethereum-json-rpc"; // <-- which one is it?
 import { hexToNumber } from "@etclabscore/eserialize";
 
 import { baz } from "./mymod";
+import { setFlagsFromString } from "v8";
 
 const client = new ServiceRunner({
   transport: {
@@ -12,6 +13,7 @@ const client = new ServiceRunner({
   },
 });
 
+// Clients that we'll have service runner run for us.
 const erpcKotti = new EthereumJSONRPC({
   transport: {
     host: "localhost",
@@ -30,40 +32,101 @@ const erpcGoerli = new EthereumJSONRPC({
   },
 });
 
-const clients = {
-  "goerli" : erpcGoerli,
-  "kotti" : erpcKotti,
-};
+interface starI {
+  erpc: EthereumJSONRPC,
+  gatekey: string,
+  latestBlock: string,
+}
+
+const stars = {
+  "goerli": {
+    erpc: erpcGoerli,
+    gatekey: "kotti",
+    latestBlock: "0x0",
+  },
+  "kotti": {
+    erpc: erpcKotti,
+    gatekey: "goerli",
+    latestBlock: "0x0",
+  },
+}
+
+const getStar = (name: string) => {
+  if (name == "kotti") {
+    return stars.kotti;
+  }
+  return stars.goerli;
+}
+
+// Only need one address for both chains.
+const myAddr = "0x";
 
 const setupClients = async (environments: string[]) => {
   let thing1 = baz;
+  console.log("Installing multi-geth v1.9.2");
   const result = await client.installService("multi-geth", "1.9.2");
-  console.log("result"); //tslint:disable-line
+  console.log("multi-geth", "1.9.2", "installed ok?", result);
   const promises = environments.map(async (env)=>{
-      console.log("setting up env", env);
+      console.log("Setting up client:", env);
       return client.startService("multi-geth", "1.9.2", env);
   });
   return Promise.all(promises); // this is async, one big promise
 };
 
-const exec = async () => {
-  await setupClients(Object.keys(clients)); // this will actually wait promises return
-//  const balance = await clients.kotti.eth_getBalance("0xc1912fee45d61c87cc5ea59dae31190fffff232d", "0x0");
-// use BigNumber.js I think to pull this back ~ npm install  @types/bignumber.js
-// console.log(balance);
-//  const txReciept = await clients.goerli.eth_sendRawTransaction(txHashKotti);
-
-  let blockResponse = await clients.kotti.eth_getBlockByNumber("latest", false);
-  if (blockResponse) {
-    let n = blockResponse.number;
-    if (n) {
-      console.log("blockn", hexToNumber(n));
-    }
-  }
+const logStatus = async () => {
+  const now = new Date();
+  console.log(now, Object.keys(stars).map((k) => {
+    return {env: k, latest_block: hexToNumber(getStar(k).latestBlock)};
+  }));
 };
 
+const pollLatestBlocks = async (environments: string[])  => {
+  const promises = environments.map(async (k) => {
+    getStar(k).erpc.eth_getBlockByNumber("latest", true)
+      .then(async (br) => {
+        const didup = await handleBlockResponse(k, br);
+        if (didup) {
+          logStatus();
+        } else {
+          console.log(".");
+        }
+      })
+      ;
+  });
+  return Promise.all(promises);
+}
+
+const handleBlockResponse = async (environment: string, blockResponse: GetBlockByHashResult) => {
+  let didUpdate = false;
+  if (blockResponse) {
+
+    // We have a new block.
+    if (blockResponse.number && blockResponse.number !== getStar(environment).latestBlock) {
+      didUpdate = true;
+
+      // Modify 'state'.
+      getStar(environment).latestBlock = blockResponse.number;
+
+      let txs = blockResponse.transactions;
+      if (txs) {
+        // console.log(environment, "tranactions length", txs.length);
+      }
+    }
+  }
+  return didUpdate;
+};
+
+const exec = async () => {
+  await setupClients(Object.keys(stars)); // this will actually wait promises return
+
+  setInterval(() => {
+    pollLatestBlocks(Object.keys(stars));
+  }, 1000);
+
+ };
+
 exec().then(() => {
-  console.log("ok");
+  console.log("Exec finished without errors");
 }).catch((err) => {
-  console.log("got error", err);
+  console.log("Exec got error:", err);
 });
