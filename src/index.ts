@@ -1,6 +1,6 @@
 import ServiceRunner from "@etclabscore/jade-service-runner-client";
 import { EthereumJSONRPC, GetBlockByHashResult } from "@etclabscore/ethereum-json-rpc"; // <-- which one is it?
-import { hexToNumber } from "@etclabscore/eserialize";
+import { hexToNumber, dateToHex } from "@etclabscore/eserialize";
 
 import { baz } from "./mymod";
 import { setFlagsFromString } from "v8";
@@ -36,6 +36,8 @@ interface starI {
   erpc: EthereumJSONRPC,
   gatekey: string,
   latestBlock: string,
+  myBal: number,
+  lastUpdate: Date,
 }
 
 const stars = {
@@ -43,11 +45,15 @@ const stars = {
     erpc: erpcGoerli,
     gatekey: "kotti",
     latestBlock: "0x0",
+    myBal: 0,
+    lastUpdate: new Date(),
   },
   "kotti": {
     erpc: erpcKotti,
     gatekey: "goerli",
     latestBlock: "0x0",
+    myBal: 0,
+    lastUpdate: new Date(),
   },
 }
 
@@ -59,7 +65,7 @@ const getStar = (name: string) => {
 }
 
 // Only need one address for both chains.
-const myAddr = "0x";
+const myAddr = "0xf215e98b4f0c749fe9b78d0d4fa97ac7c9a4fe11";
 
 const setupClients = async (environments: string[]) => {
   let thing1 = baz;
@@ -73,10 +79,31 @@ const setupClients = async (environments: string[]) => {
   return Promise.all(promises); // this is async, one big promise
 };
 
+const getBalance = async (environments: string[], addr: string) => {
+    const promises = environments.map(async (k) => {
+      getStar(k).erpc.eth_getBalance(addr, getStar(k).latestBlock)
+        .then(async (res) => {
+          if (res) {
+            getStar(k).myBal = hexToNumber(res);
+          }
+        })
+        .catch((err) => {
+          console.log("get balance got error", err);
+        })
+        ;
+    })
+    return Promise.all(promises);
+};
+
 const logStatus = async () => {
   const now = new Date();
   console.log(now, Object.keys(stars).map((k) => {
-    return {env: k, latest_block: hexToNumber(getStar(k).latestBlock)};
+    return {
+      env: k,
+      updated_nseconds_ago: new Date().getUTCSeconds() - getStar(k).lastUpdate.getUTCSeconds(),
+      latest_block: hexToNumber(getStar(k).latestBlock),
+      my_balance: getStar(k).myBal
+    };
   }));
 };
 
@@ -86,9 +113,11 @@ const pollLatestBlocks = async (environments: string[])  => {
       .then(async (br) => {
         const didup = await handleBlockResponse(k, br);
         if (didup) {
-          logStatus();
+          getBalance(environments, myAddr)
+            .then(logStatus)
+            ;
         } else {
-          console.log(".");
+          // console.log(".");
         }
       })
       ;
@@ -103,6 +132,7 @@ const handleBlockResponse = async (environment: string, blockResponse: GetBlockB
     // We have a new block.
     if (blockResponse.number && blockResponse.number !== getStar(environment).latestBlock) {
       didUpdate = true;
+      getStar(environment).lastUpdate = new Date();
 
       // Modify 'state'.
       getStar(environment).latestBlock = blockResponse.number;
