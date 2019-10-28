@@ -61,12 +61,13 @@ export class StarClass {
   }
 
   public async getAddressBalance() {
-    await this.erpc.eth_getBalance(this.gateAddress)
-      .then(this.handleBalanceResult)
-      .catch((err) => {
-        // tslint:disable-next-line:no-console
-        console.log("get bal error", err);
-      });
+    try {
+      const balance = await this.erpc.eth_getBalance(this.gateAddress);
+      await this.handleBalanceResult(balance);
+    } catch (err) {
+      // tslint:disable-next-line:no-console
+      console.log("get bal error", err);
+    }
   }
 
   private handleLatestBlock(res: GetBlockByNumberResult) {
