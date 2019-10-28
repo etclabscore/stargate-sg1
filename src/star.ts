@@ -7,6 +7,7 @@ import EthereumJSONRPC, {
 import {hexToNumber} from "@etclabscore/eserialize";
 
 export class StarClass {
+
   public name: string;
   public gateAddress: string;
 
@@ -17,13 +18,6 @@ export class StarClass {
   public latestBlock!: GetBlockByNumberResult;
   // tslint:disable-next-line:variable-name
   private erpc: EthereumJSONRPC;
-
-  private mustGetLatestBlockNumber(): string {
-    if (this.latestBlock) {
-      return this.latestBlock.number || "0x0";
-    }
-    return "0x0";
-  }
 
   // tslint:disable-next-line:variable-name
   private _blockDidUpdate: Array<(c: StarClass) => void> = [];
@@ -56,6 +50,13 @@ export class StarClass {
       // tslint:disable-next-line:no-console
       console.log("get bal error", err);
     }
+  }
+
+  private mustGetLatestBlockNumber(): string {
+    if (this.latestBlock) {
+      return this.latestBlock.number || "0x0";
+    }
+    return "0x0";
   }
 
   private handleLatestBlock(res: GetBlockByNumberResult) {

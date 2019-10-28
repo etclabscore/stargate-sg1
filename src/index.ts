@@ -17,11 +17,6 @@ const client = new ServiceRunner({
   },
 });
 
-// // Clients that we'll have service runner run for us.
-// const erpcKottiOpts = ;
-//
-// const erpcGoerliOpts = ;
-
 // Only need one address for both chains.
 const myAddr = "0xf215e98b4f0c749fe9b78d0d4fa97ac7c9a4fe11";
 
@@ -74,9 +69,6 @@ const exec = async () => {
   starKotti.onBlockDidUpdate((foo) => starKotti.getAddressBalance());
   starKotti.onBlockDidUpdate(logStatus);
   starKotti.doPoll(() => starKotti.setStateFromClient(), 1000);
-
-  // // tslint:disable-next-line:no-console
-  // starGoerli.doPoll(() => console.log("goerli polling"), 1000);
 
  };
 
