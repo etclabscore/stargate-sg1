@@ -41,37 +41,42 @@ const setupClients = async (environments: string[]) => {
 
 const logStatus = (sc: StarClass) => {
   // tslint:disable-next-line:no-console
-  console.log(sc.name, sc.latestBlock ? sc.latestBlock.number : "?", "bal", sc.gateAddressBalance);
+  console.log(sc.name, "latest block", sc.latestBlock
+    ? hexToNumber(sc.latestBlock.number || "")
+    : "?", "bal", sc.gateAddressBalance);
 }
+
+const starGoerli = new StarClass("goerli", {
+  transport: {
+    host: "localhost",
+    port: 8002,
+    type: "http",
+    path: "multi-geth/goerli/1.9.2",
+  },
+}, myAddr);
+
+const starKotti = new StarClass("kotti", {
+  transport: {
+    host: "localhost",
+    port: 8002,
+    type: "http",
+    path: "multi-geth/kotti/1.9.2",
+  },
+}, myAddr);
 
 const exec = async () => {
   await setupClients(["goerli", "kotti"]);
 
-  const starGoerli = new StarClass("goerli", {
-    transport: {
-      host: "localhost",
-      port: 8002,
-      type: "http",
-      path: "multi-geth/goerli/1.9.2",
-    },
-  }, myAddr);
-
-  const starKotti = new StarClass("kotti", {
-    transport: {
-      host: "localhost",
-      port: 8002,
-      type: "http",
-      path: "multi-geth/kotti/1.9.2",
-    },
-  }, myAddr);
-
   starGoerli.onBlockDidUpdate((foo) => starGoerli.getAddressBalance());
   starGoerli.onBlockDidUpdate(logStatus);
-  starGoerli.doPoll(starGoerli.setStateFromClient, 1000);
+  starGoerli.doPoll(() => starGoerli.setStateFromClient(), 1000);
 
   starKotti.onBlockDidUpdate((foo) => starKotti.getAddressBalance());
   starKotti.onBlockDidUpdate(logStatus);
-  starKotti.doPoll(starKotti.setStateFromClient, 1000);
+  starKotti.doPoll(() => starKotti.setStateFromClient(), 1000);
+
+  // // tslint:disable-next-line:no-console
+  // starGoerli.doPoll(() => console.log("goerli polling"), 1000);
 
  };
 

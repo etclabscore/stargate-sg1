@@ -7,27 +7,26 @@ import EthereumJSONRPC, {
 import {hexToNumber} from "@etclabscore/eserialize";
 
 export class StarClass {
-  get gateAddressBalance(): number {
-    return this._gateAddressBalance;
-  }
-
-  get latestBlock(): ObjectW9HVodO0 | null {
-    return this._latestBlock;
-  }
-
   public name: string;
   public gateAddress: string;
+
+  // tslint:disable-next-line:variable-name
+  public gateAddressBalance: number = 0;
+  // tslint:disable-next-line:variable-name
+  // tslint:disable-next-line:variable-name
+  public latestBlock!: GetBlockByNumberResult;
   // tslint:disable-next-line:variable-name
   private erpc: EthereumJSONRPC;
 
-  // tslint:disable-next-line:variable-name
-  private _blockDidUpdate: Array<(c: StarClass) => void> = [];
+  private mustGetLatestBlockNumber(): string {
+    if (this.latestBlock) {
+      return this.latestBlock.number || "0x0";
+    }
+    return "0x0";
+  }
 
   // tslint:disable-next-line:variable-name
-  private _gateAddressBalance: number = 0;
-  // tslint:disable-next-line:variable-name
-  // tslint:disable-next-line:variable-name
-  private _latestBlock!: GetBlockByNumberResult;
+  private _blockDidUpdate: Array<(c: StarClass) => void> = [];
 
   constructor(name: string, erpcOpts: Options, address: string) {
     this.name = name;
@@ -46,16 +45,12 @@ export class StarClass {
 
   public setStateFromClient() {
     this.erpc.eth_getBlockByNumber("latest", true)
-      .then(this.handleLatestBlock)
-      .catch((err) => {
-        // tslint:disable-next-line:no-console
-        console.log("set state error", err);
-      });
+      .then((foo) => this.handleLatestBlock(foo));
   }
 
   public async getAddressBalance() {
     try {
-      const balance = await this.erpc.eth_getBalance(this.gateAddress);
+      const balance = await this.erpc.eth_getBalance(this.gateAddress, this.mustGetLatestBlockNumber());
       await this.handleBalanceResult(balance);
     } catch (err) {
       // tslint:disable-next-line:no-console
@@ -65,9 +60,9 @@ export class StarClass {
 
   private handleLatestBlock(res: GetBlockByNumberResult) {
     if (res) {
-      const oldB = this._latestBlock;
-      this._latestBlock = res;
-      if (oldB && oldB.number !== res.number) {
+      const oldB = this.latestBlock;
+      this.latestBlock = res;
+      if (!oldB || (oldB.number !== res.number)) {
         // tslint:disable-next-line:prefer-for-of
         for (let i = 0; i < this._blockDidUpdate.length; i++) {
           this._blockDidUpdate[i](this);
@@ -78,7 +73,7 @@ export class StarClass {
 
   private handleBalanceResult(res: GetBalanceResult) {
     if (res) {
-      this._gateAddressBalance = hexToNumber(res);
+      this.gateAddressBalance = hexToNumber(res);
     }
   }
 }
