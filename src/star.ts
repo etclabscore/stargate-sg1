@@ -15,17 +15,10 @@ export class StarClass {
     return this._latestBlock;
   }
 
-  set erpc(value: EthereumJSONRPC) {
-    this._erpc = value;
-  }
-  get erpc(): EthereumJSONRPC {
-    return this._erpc;
-  }
-
   public name: string;
   public gateAddress: string;
   // tslint:disable-next-line:variable-name
-  private _erpc!: EthereumJSONRPC;
+  private erpc: EthereumJSONRPC;
 
   // tslint:disable-next-line:variable-name
   private _blockDidUpdate: Array<(c: StarClass) => void> = [];
