@@ -65,11 +65,11 @@ const exec = async () => {
     },
   }, myAddr);
 
-  starGoerli.onBlockDidUpdate(starGoerli.getAddressBalance);
+  starGoerli.onBlockDidUpdate((foo) => starGoerli.getAddressBalance());
   starGoerli.onBlockDidUpdate(logStatus);
   starGoerli.doPoll(starGoerli.setStateFromClient, 1000);
 
-  starKotti.onBlockDidUpdate(starKotti.getAddressBalance);
+  starKotti.onBlockDidUpdate((foo) => starKotti.getAddressBalance());
   starKotti.onBlockDidUpdate(logStatus);
   starKotti.doPoll(starKotti.setStateFromClient, 1000);
 
