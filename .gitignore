@@ -6,3 +6,6 @@ docs
 dist
 /**/build
 keystore/
+.clef/
+audit.log
+jade-service-runner.debug.log
