@@ -5,6 +5,8 @@ set -e
 source ./clef-config.sh
 
 init_clef(){
+  echo "Initializing clef..."
+
   mkdir "$CLEF_CONFIG_DIR"
   clef \
     --configdir "$CLEF_CONFIG_DIR" \
@@ -22,4 +24,7 @@ init_clef(){
     --configdir "$CLEF_CONFIG_DIR" \
     attest $rules_file_hash
 }
-[[ ! -d "$CLEF_CONFIG_DIR" ]] && init_clef
+if [[ ! -d "$CLEF_CONFIG_DIR" ]]; then
+  init_clef
+fi
+

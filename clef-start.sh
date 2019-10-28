@@ -3,6 +3,9 @@
 # Goerli chainid = 5
 # Kotti chainid = 6
 
+set -x
+set -e
+
 source ./clef-config.sh
 source ./clef-setup.sh
 
