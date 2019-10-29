@@ -1,16 +1,23 @@
 # stargate-sg1
 
-Demonstrating basic "Stargate" cross-chain interactions with https://github.com/etclabscore/jade-service-runner.
+> Scaling without gimmicks
 
-This is a proof of concept that will:
+> A Stargate is a server side application that listens for incoming transactions on one chain and sends a complimentary transaction on the other chain. 
 
-- boot kotti
-- boot goerli
-- listen for transaction on kotti
-- make transaction on goerli
-- vice versa
 
-### Develop
+Demonstrating basic ["Stargate" cross-chain interactions](https://medium.com/@DontPanicBurns/the-blockchain-stargate-366a7a72822e), made Very Simple :tm: by 
+- [etclabscore/multi-geth](https://github.com/etclabscore/multi-geth),
+- [etclabscore/jade-service-runner](https://github.com/etclabscore/jade-service-runner), and 
+- [etclabscore/ethereum-json-rpc-specification](https://github.com/etclabscore/ethereum-json-rpc-specification).
+
+>The typescript application you'll find in [src/](./src/) is a proof of concept that will:
+
+- Boot `goerli`
+- Boot `kotti`
+- Listen for transactions to "our" address on either chain
+- Make a complimentary transaction (transposing sender and recipient) on the opposite chain
+
+### Develop/Run
 
 ```shell
 <Terminal 0> $ jade-service-runner
