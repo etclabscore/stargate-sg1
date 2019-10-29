@@ -1,12 +1,16 @@
 import fetch from "node-fetch";
 
-interface ITransactionData {
-  to: string;
+// TODO: This could probably be refactored to use an interface imported
+// from @etclabscore/ethereum-json-rpc instead of rolling our own.
+export interface ITransactionData {
+  to?: string;
   from: string;
-  value: string;
+  value?: string;
   nonce: string;
   gas: string;
   gasPrice: string;
+  input?: string;
+  data?: string;
 }
 
 interface IOptions {

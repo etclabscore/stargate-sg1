@@ -1,5 +1,5 @@
 import ServiceRunner from "@etclabscore/jade-service-runner-client";
-import { hexToNumber, numberToHex } from "@etclabscore/eserialize";
+import { hexToNumber } from "@etclabscore/eserialize";
 import { StarClass } from "./star";
 import { TxSigner } from "./txsigner";
 import gate from "./gate";
@@ -75,30 +75,18 @@ const manageGatedTransactions = async (readStar: StarClass, writeStar: StarClass
   if (readStar.syncing) {
     return;
   }
-  const credits = gate.getOutstandingCredits(readStar, myAddr);
-  if (credits.length === 0) {
+  const sgTransactions = gate.getOutstandingTransactions(readStar, writeStar, myAddr);
+  if (sgTransactions.length === 0) {
     // tslint:disable-next-line:no-console
     console.log("@", readStar.name, "No managed transaction found. Returning.");
   }
-  for (let i = 0; i < credits.length; i++) {
-    if (hexToNumber(credits[i].value) > writeStar.gateAddressBalance) {
-      // tslint:disable-next-line:no-console
-      console.log("They're running on the bank! Close up the doors!");
-      process.exit(42);
-    }
+  // tslint:disable-next-line:prefer-for-of
+  for (let i = 0; i < sgTransactions.length; i++) {
+    const sgTx = sgTransactions[i];
+
     // tslint:disable-next-line:no-console
-    console.log("<-", readStar.name, "from", credits[i].sender, "value", hexToNumber(credits[i].value))
-    const data = {
-      from: myAddr,
-      to: credits[i].sender,
-      value: credits[i].value,
-      nonce: numberToHex(writeStar.gateAddressNonce + i),
-      gas: numberToHex(21000),
-      gasPrice: numberToHex(60000000000),
-    };
-    // tslint:disable-next-line:no-console
-    console.log("->", writeStar.name, "corresponding write tx", data);
-    const signedTransaction = await getSigningStar(writeStar.name).signTransaction(data);
+    console.log("->", writeStar.name, "corresponding write tx", sgTx);
+    const signedTransaction = await getSigningStar(writeStar.name).signTransaction(sgTx);
     // tslint:disable-next-line:no-console
     console.log("->", writeStar.name, "signed write tx", signedTransaction);
     writeStar.sendRawTransaction(signedTransaction)
@@ -114,12 +102,12 @@ const manageGatedTransactions = async (readStar: StarClass, writeStar: StarClass
 const exec = async () => {
   await setupClients(["goerli2", "kotti2"]);
 
-  if (starSigners.goerli.port === 0) {
+  if (isNaN(starSigners.goerli.port)) {
     // tslint:disable-next-line:no-console
     console.log("Invalid signing port passed to Goerli signer config (ARG 1)");
     process.exit(1);
   }
-  if (starSigners.kotti.port === 0) {
+  if (isNaN(starSigners.kotti.port)) {
     // tslint:disable-next-line:no-console
     console.log("Invalid signing port passed to Kotti signer config (ARG 2)");
     process.exit(1);
@@ -142,8 +130,10 @@ const exec = async () => {
 const logStatus = (sc: StarClass) => {
   // tslint:disable-next-line:no-console
   if (sc.syncing) {
+    // tslint:disable-next-line:no-console
     console.log(":", sc.name, "syncing...");
   } else {
+    // tslint:disable-next-line:no-console
     console.log(":", sc.name, "latest block", sc.latestBlock
       ? hexToNumber(sc.latestBlock.number || "")
       : "?", "block.txsN", sc.latestBlock ? sc.latestBlock.transactions!.length : -1, "bal", sc.gateAddressBalance);

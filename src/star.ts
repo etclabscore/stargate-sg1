@@ -7,10 +7,8 @@ import EthereumJSONRPC, {
 import {hexToNumber} from "@etclabscore/eserialize";
 import {
   NonceOrNull,
-  ObjectQN4RqE6Z,
   OneOf08Ts8ZCB,
   OneOf5ZIsDKft,
-  StringQvf80GFh
 } from "@etclabscore/ethereum-json-rpc/build";
 
 export class StarClass {
@@ -19,8 +17,8 @@ export class StarClass {
 
   // tslint:disable-next-line:variable-name
   public gateAddress: string;
-  public gateAddressBalance: number = 1000042;
-  public gateAddressNonce: number = 1000042;
+  public gateAddressBalance: number = 0;
+  public gateAddressNonce: number = 0;
 
   // tslint:disable-next-line:variable-name
   // tslint:disable-next-line:variable-name
