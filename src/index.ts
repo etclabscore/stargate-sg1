@@ -86,15 +86,28 @@ const manageGatedTransactions = async (readStar: StarClass, writeStar: StarClass
       console.log("They're running on the bank! Close up the doors!");
       process.exit(42);
     }
-    const signedTransaction = await getSigningStar(writeStar.name).signTransaction({
-      to: credits[i].sender,
+    // tslint:disable-next-line:no-console
+    console.log("<-", readStar.name, "from", credits[i].sender, "value", hexToNumber(credits[i].value))
+    const data = {
       from: myAddr,
+      to: credits[i].sender,
       value: credits[i].value,
-      nonce: numberToHex(writeStar.gateAddressNonce + 1),
-      gas: numberToHex(200000),
-      gasPrice: numberToHex(60 * Math.pow(10, 9)), // 60 Gwei should be _plenty_
-    });
-    writeStar.sendRawTransaction(signedTransaction);
+      nonce: numberToHex(writeStar.gateAddressNonce + i),
+      gas: numberToHex(21000),
+      gasPrice: numberToHex(60000000000),
+    };
+    // tslint:disable-next-line:no-console
+    console.log("->", writeStar.name, "corresponding write tx", data);
+    const signedTransaction = await getSigningStar(writeStar.name).signTransaction(data);
+    // tslint:disable-next-line:no-console
+    console.log("->", writeStar.name, "signed write tx", signedTransaction);
+    writeStar.sendRawTransaction(signedTransaction)
+      .then((txhash) => {
+        // tslint:disable-next-line:no-console
+        console.log("->", writeStar.name, "posted write tx.hash:", txhash);
+      })
+      // tslint:disable-next-line:no-console
+      .catch((err) => console.log("->", writeStar.name, "send tx error:", err.toString().split("\n")[0]));
   }
 };
 

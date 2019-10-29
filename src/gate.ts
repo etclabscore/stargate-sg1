@@ -1,4 +1,5 @@
 import {StarClass} from "./star";
+import {hexToNumber} from "@etclabscore/eserialize";
 
 export interface IGateCredit {
   fromClient: StarClass;
@@ -30,8 +31,10 @@ const getOutstandingCredits = (client: StarClass, addr: string): IGateCredit[] =
               }
             }
           });
-      } else  {
-        if (addr === t.to) {
+      } else {
+        // testing/development:
+        if (t.to && t.to.length && hexToNumber(t.value!) === 0) {
+        // if (addr === t.to) {
           credits.push({
             fromClient: client,
             sender: t.from || "",

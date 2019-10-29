@@ -77,8 +77,7 @@ export class StarClass {
 
   public sendRawTransaction(hash: string) {
     // tslint:disable-next-line:no-console
-    console.log(this.name, "eth_sendRawTransaction", hash);
-    // this.erpc.eth_sendRawTransaction(hash); // NOOP, for development, for now
+    return this.erpc.eth_sendRawTransaction(hash);
   }
 
   public async getTransaction(hash: string) {
