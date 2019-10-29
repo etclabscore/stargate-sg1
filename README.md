@@ -1,6 +1,6 @@
 # stargate-sg1
 
-> Scaling without gimmicks
+> __Scaling without gimmicks__
 > 
 > ... A Stargate is a server side application that listens for incoming transactions on one chain and sends a complimentary transaction on the other chain. 
 >
