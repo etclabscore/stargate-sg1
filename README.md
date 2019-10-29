@@ -1,10 +1,12 @@
 # stargate-sg1
 
 > Scaling without gimmicks
-
-> A Stargate is a server side application that listens for incoming transactions on one chain and sends a complimentary transaction on the other chain. 
-
+> 
+> ... A Stargate is a server side application that listens for incoming transactions on one chain and sends a complimentary transaction on the other chain. 
+>
 > https://medium.com/@DontPanicBurns/the-blockchain-stargate-366a7a72822e
+
+![gif](https://miro.medium.com/max/500/1*kMj5jSrsMRUIyhylR9ic2A.gif)
 
 This prototype app brings the above cited idea to life, made Very Simple :tm: by using
  
