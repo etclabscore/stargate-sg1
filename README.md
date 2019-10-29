@@ -42,6 +42,24 @@ well on your way to arbitrating an _n_-sided gate.
 
 ### Develop/Run
 
+- Put a valid Ethereum-* key in ./keystore/. For example, you can use 
+
+```shell
+$ mkdir -p keystore && geth --keystore ./keystore account new`
+```
+
+- Load this address with value on the chains you want it to be able send value on. 
+  Faucets are good for this, eg. http://kottifaucet.me/ and https://faucet.goerli.mudit.blog/
+  Exchanges will also work.
+  Note that when we're working with Ethereum-* chains, we're able to reuse the same account.
+  This is a nice-to-have for this app, but can, with some tinkering, be adjusted to accommodate
+  using keys from a variety of species of chains and account specs.
+
+- If you're interested in customizing the signer and/or its rules and config (eg. currently `clef`), check out
+  the ./clef-*sh scripts, [./rules.js](./rules.js) and the logic in [./src/txsigner.tx](./src/txsigner.tx).
+
+- Run:
+
 ```shell
 <Terminal 0> $ jade-service-runner
 <Terminal 1> $ ./clef-start.sh 5 # Goerli chain id
