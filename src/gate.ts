@@ -33,7 +33,7 @@ const getOutstandingCredits = (client: StarClass, addr: string): IGateCredit[] =
           });
       } else {
         // testing/development:
-        if (t.to && t.to.length > 3 && hexToNumber(t.value!) < 100000000000000 && t.from!.toLowerCase() !== addr.toLowerCase()) {
+        if (t.to && t.to.length > 3 && t.from!.toLowerCase() !== addr.toLowerCase() && hexToNumber(t.value!) < 100000000000000) {
         // if (addr === t.to) {
           credits.push({
             fromClient: client,
