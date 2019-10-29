@@ -9,6 +9,10 @@ source ./clef-setup.sh
 echo Using Clef environment:
 env | grep CLEF_
 
+if [[ ! -d "$CLEF_CONFIG_DIR" ]]; then
+  init_clef
+fi
+
 chainid="$1"
 [[ -z "$chainid" ]] && { echo "Please provide a chain id as ARG1."; exit 1; }
 

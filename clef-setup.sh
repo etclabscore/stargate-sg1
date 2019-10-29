@@ -27,7 +27,3 @@ init_clef(){
     --configdir "$CLEF_CONFIG_DIR" \
     attest $rules_file_hash
 }
-if [[ ! -d "$CLEF_CONFIG_DIR" ]]; then
-  init_clef
-fi
-
