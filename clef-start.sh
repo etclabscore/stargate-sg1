@@ -3,15 +3,16 @@
 # Goerli chainid = 5
 # Kotti chainid = 6
 
-set -x
-set -e
-
 source ./clef-config.sh
 source ./clef-setup.sh
 
-chainid="$1"
+echo Using Clef environment:
+env | grep CLEF_
 
+chainid="$1"
 [[ -z "$chainid" ]] && { echo "Please provide a chain id as ARG1."; exit 1; }
+
+echo "Using chain id: $chainid"
 
 # https://unix.stackexchange.com/a/132524/273201
 any_available_port(){
@@ -20,7 +21,7 @@ any_available_port(){
 
 port=$(any_available_port)
 echo "Starting clef for chain id: $chainid ..."
-echo " -> Will run HTTP JSON-RPC on port: $port"
+echo "-> Will run HTTP JSON-RPC on port: $port"
 
 clef \
   --chainid $chainid \

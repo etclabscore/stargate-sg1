@@ -1,10 +1,8 @@
 import ServiceRunner from "@etclabscore/jade-service-runner-client";
-import { EthereumJSONRPC, GetBlockByHashResult } from "@etclabscore/ethereum-json-rpc"; // <-- which one is it?
 import { hexToNumber, numberToHex } from "@etclabscore/eserialize";
 import { StarClass } from "./star";
 import { TxSigner } from "./txsigner";
-import gate, {IGateCredit} from "./gate";
-// const exec = require('child_process').exec; //, child;
+import gate from "./gate";
 
 const client = new ServiceRunner({
   transport: {
@@ -36,7 +34,7 @@ const starGoerli = new StarClass("goerli", {
     host: "localhost",
     port: 8002,
     type: "http",
-    path: "multi-geth/goerli/1.9.2",
+    path: "multi-geth/goerli2/1.9.2",
   },
 }, myAddr);
 
@@ -45,7 +43,7 @@ const starKotti = new StarClass("kotti", {
     host: "localhost",
     port: 8002,
     type: "http",
-    path: "multi-geth/kotti/1.9.2",
+    path: "multi-geth/kotti2/1.9.2",
   },
 }, myAddr);
 
@@ -74,12 +72,20 @@ const getSigningStar = (name: string) => {
 };
 
 const manageGatedTransactions = async (readStar: StarClass, writeStar: StarClass) => {
+  if (readStar.syncing) {
+    return;
+  }
   const credits = gate.getOutstandingCredits(readStar, myAddr);
   if (credits.length === 0) {
     // tslint:disable-next-line:no-console
-    console.log(readStar.name, "No managed transaction found. Returning.");
+    console.log("@", readStar.name, "No managed transaction found. Returning.");
   }
   for (let i = 0; i < credits.length; i++) {
+    if (hexToNumber(credits[i].value) > writeStar.gateAddressBalance) {
+      // tslint:disable-next-line:no-console
+      console.log("They're running on the bank! Close up the doors!");
+      process.exit(42);
+    }
     const signedTransaction = await getSigningStar(writeStar.name).signTransaction({
       to: credits[i].sender,
       from: myAddr,
@@ -90,32 +96,45 @@ const manageGatedTransactions = async (readStar: StarClass, writeStar: StarClass
     });
     writeStar.sendRawTransaction(signedTransaction);
   }
-}
+};
 
 const exec = async () => {
-  await setupClients(["goerli", "kotti"]);
+  await setupClients(["goerli2", "kotti2"]);
+
+  if (starSigners.goerli.port === 0) {
+    // tslint:disable-next-line:no-console
+    console.log("Invalid signing port passed to Goerli signer config (ARG 1)");
+    process.exit(1);
+  }
+  if (starSigners.kotti.port === 0) {
+    // tslint:disable-next-line:no-console
+    console.log("Invalid signing port passed to Kotti signer config (ARG 2)");
+    process.exit(1);
+  }
 
   // tslint:disable-next-line:no-console
   console.log("Command did set by args:",
     "goerli signer port=", starGoerli.signerHTTPPort,
     "kotti signer port=", starKotti.signerHTTPPort);
 
-  starGoerli.onBlockDidUpdate((foo) => starGoerli.getAddressBalance());
-  starGoerli.onBlockDidUpdate((foo) => manageGatedTransactions(starGoerli, starKotti));
   starGoerli.onBlockDidUpdate(logStatus);
+  starGoerli.onBlockDidUpdate((foo) => manageGatedTransactions(starGoerli, starKotti));
   starGoerli.doPoll(() => starGoerli.setStateFromClient(), 1000);
 
-  starKotti.onBlockDidUpdate((foo) => starKotti.getAddressBalance());
-  starGoerli.onBlockDidUpdate((foo) => manageGatedTransactions(starKotti, starGoerli));
   starKotti.onBlockDidUpdate(logStatus);
+  starKotti.onBlockDidUpdate((foo) => manageGatedTransactions(starKotti, starGoerli));
   starKotti.doPoll(() => starKotti.setStateFromClient(), 1000);
 };
 
 const logStatus = (sc: StarClass) => {
   // tslint:disable-next-line:no-console
-  console.log(":", sc.name, "latest block", sc.latestBlock
-    ? hexToNumber(sc.latestBlock.number || "")
-    : "?", "bal", sc.gateAddressBalance);
+  if (sc.syncing) {
+    console.log(":", sc.name, "syncing...");
+  } else {
+    console.log(":", sc.name, "latest block", sc.latestBlock
+      ? hexToNumber(sc.latestBlock.number || "")
+      : "?", "block.txsN", sc.latestBlock ? sc.latestBlock.transactions!.length : -1, "bal", sc.gateAddressBalance);
+  }
 };
 
 exec().then(() => {

@@ -5,21 +5,27 @@ import EthereumJSONRPC, {
 } from "@etclabscore/ethereum-json-rpc";
 
 import {hexToNumber} from "@etclabscore/eserialize";
-import {NonceOrNull, OneOf08Ts8ZCB, StringQvf80GFh} from "@etclabscore/ethereum-json-rpc/build";
+import {
+  NonceOrNull,
+  ObjectQN4RqE6Z,
+  OneOf08Ts8ZCB,
+  OneOf5ZIsDKft,
+  StringQvf80GFh
+} from "@etclabscore/ethereum-json-rpc/build";
 
 export class StarClass {
 
   public name: string;
-  public gateAddress: string;
 
   // tslint:disable-next-line:variable-name
-  public gateAddressBalance: number = 0;
-  public gateAddressNonce: number = 0;
+  public gateAddress: string;
+  public gateAddressBalance: number = 1000042;
+  public gateAddressNonce: number = 1000042;
 
   // tslint:disable-next-line:variable-name
   // tslint:disable-next-line:variable-name
   public latestBlock!: GetBlockByNumberResult;
-
+  public syncing: boolean = true;
   public signerHTTPPort: number = 0;
 
   // tslint:disable-next-line:variable-name
@@ -45,15 +51,34 @@ export class StarClass {
 
   public setStateFromClient() {
     this.erpc.eth_getBlockByNumber("latest", true)
-      .then((foo) => this.handleLatestBlock(foo));
-    this.erpc.eth_getTransactionCount(this.gateAddress, "latest")
-      .then((foo) => this.handleGateAddressTransactionCount(foo));
+      .then((foo) => this.handleLatestBlock(foo))
+      .catch((err) => {
+        // tslint:disable-next-line:no-console
+        console.log("error/eth_getBlockByNumber", err);
+      });
+    this.erpc.eth_getBalance(this.gateAddress, this.latestBlock ? this.latestBlock.number || "0x0" : "0x0")
+      .then((foo) => this.handleBalanceResult(foo))
+      .catch((err) => {
+        // tslint:disable-next-line:no-console
+        console.log("error/eth_getBalance", err);
+      });
+    this.erpc.eth_getTransactionCount(this.gateAddress, this.latestBlock ? this.latestBlock.number || "0x0" : "0x0")
+      .then((foo) => this.handleGateAddressTransactionCount(foo))
+      .catch((err) => {
+        // tslint:disable-next-line:no-console
+        console.log("error/eth_getTransactionCount", err);
+      });
+    if (this.syncing) {
+      this.erpc.eth_syncing()
+        .then((foo) => this.handleSyncingResult(foo));
+      return;
+    }
   }
 
   public sendRawTransaction(hash: string) {
     // tslint:disable-next-line:no-console
     console.log(this.name, "eth_sendRawTransaction", hash);
-    // this.erpc.eth_sendRawTransaction(hash);
+    // this.erpc.eth_sendRawTransaction(hash); // NOOP, for development, for now
   }
 
   public async getTransaction(hash: string) {
@@ -72,21 +97,18 @@ export class StarClass {
     return gotTransactions;
   }
 
-  public async getAddressBalance() {
-    try {
-      const balance = await this.erpc.eth_getBalance(this.gateAddress, this.mustGetLatestBlockNumber());
-      await this.handleBalanceResult(balance);
-    } catch (err) {
-      // tslint:disable-next-line:no-console
-      console.log("get bal error", err);
+  private handleBalanceResult(res: GetBalanceResult) {
+    if (res) {
+      this.gateAddressBalance = hexToNumber(res);
     }
   }
 
-  private mustGetLatestBlockNumber(): string {
-    if (this.latestBlock) {
-      return this.latestBlock.number || "0x0";
+  private handleSyncingResult(res: OneOf5ZIsDKft) {
+    if (typeof res === "object") {
+      this.syncing = true;
+    } else {
+      this.syncing = false;
     }
-    return "0x0";
   }
 
   private handleGateAddressTransactionCount(res: NonceOrNull) {
@@ -105,12 +127,6 @@ export class StarClass {
           this._blockDidUpdate[i](this);
         }
       }
-    }
-  }
-
-  private handleBalanceResult(res: GetBalanceResult) {
-    if (res) {
-      this.gateAddressBalance = hexToNumber(res);
     }
   }
 }

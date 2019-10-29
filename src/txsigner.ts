@@ -22,6 +22,7 @@ export class TxSigner {
   public host: string = "localhost";
   public port: number = 5450;
 
+  // 'id' for JSON RPC POST
   private callid: number = 1;
 
   constructor(opts: IOptions) {

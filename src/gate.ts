@@ -1,5 +1,3 @@
-import {GetBlockByNumberResult} from "@etclabscore/ethereum-json-rpc";
-import {EthGetTransactionByHash} from "@etclabscore/ethereum-json-rpc/build";
 import {StarClass} from "./star";
 
 export interface IGateCredit {
@@ -15,9 +13,6 @@ const getOutstandingCredits = (client: StarClass, addr: string): IGateCredit[] =
   if (!block || !block.transactions) {
     return [];
   }
-
-  // tslint:disable-next-line:no-console
-  console.log("goerli.txs", block.transactions);
 
   for (let i = 0; i < block.transactions.length; i++) {
     const t = block.transactions[i];
