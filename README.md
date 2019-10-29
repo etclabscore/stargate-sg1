@@ -4,16 +4,19 @@
 
 > A Stargate is a server side application that listens for incoming transactions on one chain and sends a complimentary transaction on the other chain. 
 
+> https://medium.com/@DontPanicBurns/the-blockchain-stargate-366a7a72822e
 
-Demonstrating basic ["Stargate" cross-chain interactions](https://medium.com/@DontPanicBurns/the-blockchain-stargate-366a7a72822e), made Very Simple :tm: by 
+This prototype app brings the above cited idea to life, made Very Simple :tm: by using
+ 
 - [etclabscore/multi-geth](https://github.com/etclabscore/multi-geth),
 - [etclabscore/jade-service-runner](https://github.com/etclabscore/jade-service-runner), and 
 - [etclabscore/ethereum-json-rpc-specification](https://github.com/etclabscore/ethereum-json-rpc-specification).
 
->The typescript application you'll find in [src/](./src/) is a proof of concept that will:
+The typescript application you'll find in [src/](./src/) is a proof of concept that will:
 
-- Boot `goerli`
-- Boot `kotti`
+- Install multi-geth
+- Boot `goerli` and sync
+- Boot `kotti` and sync
 - Listen for transactions to "our" address on either chain
 - Make a complimentary transaction (transposing sender and recipient) on the opposite chain
 
