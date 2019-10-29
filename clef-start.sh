@@ -27,12 +27,16 @@ port=$(any_available_port)
 echo "Starting clef for chain id: $chainid ..."
 echo "-> Will run HTTP JSON-RPC on port: $port"
 
+# The --advanced flag disables case-sensitive checksum validation on To addresses.
+#  Clef will just issue a warning instead.
+#  https://github.com/ethereum/go-ethereum/issues/20214#issuecomment-547388965
 clef \
   --chainid $chainid \
   --configdir "$CLEF_CONFIG_DIR" \
   --keystore "$CLEF_KEYSTORE_DIR" \
   --rules "$CLEF_RULES_FILE" \
   --nousb \
+  --advanced \
   --ipcdisable \
   --rpc \
   --rpcport $port \
