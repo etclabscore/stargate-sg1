@@ -52,21 +52,23 @@ export class StarClass {
   public setStateFromClient() {
     this.erpc.eth_getBlockByNumber("latest", true)
       .then((foo) => this.handleLatestBlock(foo))
+      .then(() => {
+        this.erpc.eth_getBalance(this.gateAddress, this.latestBlock ? this.latestBlock.number || "0x0" : "0x0")
+          .then((foo) => this.handleBalanceResult(foo))
+          .catch((err) => {
+            // tslint:disable-next-line:no-console
+            console.log("error/eth_getBalance", err);
+          });
+        this.erpc.eth_getTransactionCount(this.gateAddress, this.latestBlock ? this.latestBlock.number || "0x0" : "0x0")
+          .then((foo) => this.handleGateAddressTransactionCount(foo))
+          .catch((err) => {
+            // tslint:disable-next-line:no-console
+            console.log("error/eth_getTransactionCount", err);
+          });
+      })
       .catch((err) => {
         // tslint:disable-next-line:no-console
         console.log("error/eth_getBlockByNumber", err);
-      });
-    this.erpc.eth_getBalance(this.gateAddress, this.latestBlock ? this.latestBlock.number || "0x0" : "0x0")
-      .then((foo) => this.handleBalanceResult(foo))
-      .catch((err) => {
-        // tslint:disable-next-line:no-console
-        console.log("error/eth_getBalance", err);
-      });
-    this.erpc.eth_getTransactionCount(this.gateAddress, this.latestBlock ? this.latestBlock.number || "0x0" : "0x0")
-      .then((foo) => this.handleGateAddressTransactionCount(foo))
-      .catch((err) => {
-        // tslint:disable-next-line:no-console
-        console.log("error/eth_getTransactionCount", err);
       });
     if (this.syncing) {
       this.erpc.eth_syncing()
