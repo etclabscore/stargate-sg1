@@ -39,7 +39,7 @@ Installing multi-geth v1.9.2
 multi-geth 1.9.2 installed ok? true
 Setting up client: goerli2
 Setting up client: kotti2
-Command did set by args: goerli signer port= 0 kotti signer port= 0
+Command did set by args: goerli signer port= 43365 kotti signer port= 46675
 Exec finished without errors
 : kotti latest block 1458358 block.txsN 0 bal 1000042
 @ kotti No managed transaction found. Returning.
