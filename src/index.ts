@@ -71,6 +71,10 @@ const getSigningStar = (name: string) => {
   return starSigners.kotti;
 };
 
+// TODO: Consider refactoring this business to ./gate.
+// The reason it's here now is it needs access to 'getSigningStar' fn, which
+// returns a TxSigner type, and it seems tangly to me to include that in the gate business side.
+// But anyways this is the crux of it.
 const manageGatedTransactions = async (readStar: StarClass, writeStar: StarClass) => {
   if (readStar.syncing) {
     return;

@@ -22,6 +22,24 @@ The typescript application you'll find in [src/](./src/) is a proof of concept t
 - Listen for transactions to "our" address on either chain
 - Make a complimentary transaction (transposing sender and recipient) on the opposite chain
 
+### For would-be hackers and tinkerers
+
+This is just a proof of concept. It's currently configured around using the test networks Goerli
+and Kotti as examples, but you can easily configure the app _to use any chains you want_. You can
+use private chains. You can use mainnets. You can use any combination of these. The Stargate document 
+talks mostly about a theoretical mainnet::CompanyNet framework, but, as above, it doesn't depend 
+on that kind of relationship. 
+
+Along these lines, described is a system where one value is stargated for another at an 
+arbitrary <2:1> ratio. _This is arbitrary_. You can get as fancy as you want; keeping in mind the Stargate mechanism
+is essentially the bones of a crypto currency exchange app. If you want, you can also get fancy 
+experimenting with stargating more than just value; contracts, data, logs -- the universe is 
+yours to wormhole between at will.
+
+Currently the code assumes that there are only 2 clients, representing a gate at its simplest.
+Swap some function signatures and data structures in here, extend the service runner, and you'll be
+well on your way to arbitrating an _n_-sided gate. 
+
 ### Develop/Run
 
 ```shell
