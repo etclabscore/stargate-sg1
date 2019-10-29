@@ -127,8 +127,8 @@ const exec = async () => {
 
   // tslint:disable-next-line:no-console
   console.log("Command did set by args:",
-    "goerli signer port=", starGoerli.signerHTTPPort,
-    "kotti signer port=", starKotti.signerHTTPPort);
+    "goerli signer port=", starSigners.goerli.port,
+    "kotti signer port=", starSigners.kotti.port);
 
   starGoerli.onBlockDidUpdate(logStatus);
   starGoerli.onBlockDidUpdate((foo) => manageGatedTransactions(starGoerli, starKotti));
