@@ -30,6 +30,6 @@
   "dependencies": {
     "@etclabscore/ethereum-json-rpc": "^1.2.3",
     "@etclabscore/jade-service-runner-client": "^1.7.4",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.7"
   }
 }
