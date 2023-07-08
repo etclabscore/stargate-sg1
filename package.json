@@ -16,13 +16,13 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@etclabscore/eserialize": "^1.0.2",
-    "@open-rpc/generator-client": "^1.13.0",
+    "@open-rpc/generator-client": "^1.14.6",
     "@types/jest": "^24.0.13",
     "@types/lodash": "^4.14.144",
     "@types/node": "^12.6.8",
     "@types/node-fetch": "^2.5.2",
     "@types/ws": "^6.0.3",
-    "jest": "^24.8.0",
+    "jest": "^29.6.1",
     "ts-jest": "^24.1.0",
     "tslint": "^5.17.0",
     "typescript": "^3.5.1"
